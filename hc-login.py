@@ -220,8 +220,18 @@ for app in appliances["appliances"]:
 with open(devicefile, "w") as f:
     json.dump(configs, f, ensure_ascii=True, indent=4)
 
-print(
-    "Success. You can now edit "
-    + devicefile
-    + ", if needed, and run hc2mqtt.py or start Home Assistant addon again"
-)
+redacted = []
+for c in configs:
+    r = dict(c)
+    if "key" in r:
+        r["key"] = "[REDACTED]"
+    if "iv" in r:
+        r["iv"] = "[REDACTED]"
+    redacted.append(r)
+
+redacted_file = devicefile.replace(".json", "_redacted.json")
+with open(redacted_file, "w") as f:
+    json.dump(redacted, f, ensure_ascii=True, indent=4)
+
+print("Success. You can now run hc2mqtt.py or start Home Assistant addon again.")
+print("A redacted copy of devices.json (safe to share) was written to " + redacted_file)
